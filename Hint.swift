@@ -1,10 +1,18 @@
+//
+//  Hint.swift
+//  iPhone Audio
+//
+//  Created by productdevbook (https://productdevbook.com).
+//  Copyright (c) 2026 productdevbook. Licensed under the MIT License.
+//
+
 import ApplicationServices
 import Cocoa
 import SwiftUI
 
-// MARK: - Audio MIDI Setup'taki "Enable" düğmesini bulma
+// MARK: - Finding the "Enable" button in Audio MIDI Setup
 
-/// Erişilebilirlik izniyle Audio MIDI Setup'ın içindeki "Enable" düğmesinin ekrandaki yerini bulur.
+/// Uses Accessibility to find where the "Enable" button in Audio MIDI Setup is on screen.
 enum EnableButtonLocator {
     private static let titles: Set<String> = ["enable", "etkinleştir"]
 
@@ -15,7 +23,7 @@ enum EnableButtonLocator {
         _ = AXIsProcessTrustedWithOptions([key: true] as CFDictionary)
     }
 
-    /// Düğmenin çerçevesi (Cocoa koordinatlarında) veya nil.
+    /// The button's frame in Cocoa coordinates, or nil.
     static func frame() -> NSRect? {
         guard isTrusted,
               let pid = NSRunningApplication.runningApplications(withBundleIdentifier: AudioMIDISetup.bundleID).first?.processIdentifier,
@@ -28,7 +36,7 @@ enum EnableButtonLocator {
             guard let position = attribute(button, kAXPositionAttribute), let extent = attribute(button, kAXSizeAttribute),
                   AXValueGetValue(position as! AXValue, .cgPoint, &origin),
                   AXValueGetValue(extent as! AXValue, .cgSize, &size), size.width > 0 else { continue }
-            // AX: sol üst köken; Cocoa: sol alt köken.
+            // AX: top-left origin; Cocoa: bottom-left origin.
             return NSRect(x: origin.x, y: primary.frame.maxY - origin.y - size.height, width: size.width, height: size.height)
         }
         return nil
@@ -52,10 +60,10 @@ enum EnableButtonLocator {
     }
 }
 
-// MARK: - Yol gösterici
+// MARK: - Hint
 
-/// iPhone sesi kapalıyken: Audio MIDI Setup'ın yanına resimli bir panel koyar; Erişilebilirlik izni
-/// varsa "Enable" düğmesini halka ve okla doğrudan işaretler.
+/// While iPhone audio is off: shows an illustrated panel next to Audio MIDI Setup and, with
+/// Accessibility access, marks the "Enable" button with a ring and an arrow.
 final class EnableHint {
     private var panel: NSPanel?
     private var pointer: NSWindow?
@@ -104,12 +112,12 @@ final class EnableHint {
 
     private func update() {
         guard let panel, let pointer else { return }
-        if !panel.isVisible { hide(); return } // kullanıcı kapattı
+        if !panel.isVisible { hide(); return } // closed by the user
         model.trusted = EnableButtonLocator.isTrusted
         placePanel(panel)
 
         if let button = EnableButtonLocator.frame() {
-            // Halka düğmeyi çevreler, ok ve yazı sağında durur.
+            // The ring surrounds the button; the arrow and label sit to its right.
             let ringWidth = button.width + 16
             pointer.setFrame(NSRect(x: button.minX - 8, y: button.midY - pointerSize.height / 2,
                                     width: ringWidth + 150, height: pointerSize.height), display: true)
@@ -125,7 +133,7 @@ final class EnableHint {
         }
     }
 
-    /// Paneli Audio MIDI Setup penceresinin sağına (sığmazsa soluna) yerleştirir.
+    /// Places the panel to the right of the Audio MIDI Setup window, or to its left if there is no room.
     private func placePanel(_ panel: NSPanel) {
         let size = panel.frame.size
         guard let target = AudioMIDISetup.windowFrame(),
@@ -156,7 +164,7 @@ final class HintModel: ObservableObject {
     @Published var pointing = false
 }
 
-// MARK: - Görünümler
+// MARK: - Views
 
 struct HintPanelView: View {
     @ObservedObject var model: HintModel
@@ -186,7 +194,7 @@ struct HintPanelView: View {
     }
 }
 
-/// Audio MIDI Setup'taki iPhone satırının basit bir çizimi; "Enable" düğmesi vurgulu.
+/// A simple drawing of the iPhone row in Audio MIDI Setup with the "Enable" button highlighted.
 struct Illustration: View {
     @State private var pulse = false
 
@@ -235,7 +243,7 @@ struct Illustration: View {
     }
 }
 
-/// Gerçek "Enable" düğmesinin üstüne konan halka + ok + yazı.
+/// Ring, arrow and label drawn over the real "Enable" button.
 struct PointerView: View {
     var ring = CGSize(width: 70, height: 30)
     @State private var bounce = false

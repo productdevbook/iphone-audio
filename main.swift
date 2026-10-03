@@ -1,3 +1,11 @@
+//
+//  main.swift
+//  iPhone Audio
+//
+//  Created by productdevbook (https://productdevbook.com).
+//  Copyright (c) 2026 productdevbook. Licensed under the MIT License.
+//
+
 import AVFoundation
 import Cocoa
 import CoreAudio
@@ -5,7 +13,7 @@ import IOKit
 import ServiceManagement
 import os
 
-// MARK: - Core Audio aygıtları
+// MARK: - Core Audio devices
 
 struct AudioDevice {
     let id: AudioDeviceID
@@ -41,7 +49,7 @@ enum CoreAudioDevices {
         return status == noErr && id != 0 ? id : nil
     }
 
-    /// Aygıt takılıp çıkarıldığında veya varsayılan çıkış değiştiğinde çağrılır.
+    /// Called when a device is added or removed, or the default output changes.
     static func onChange(_ block: @escaping () -> Void) {
         for selector in [kAudioHardwarePropertyDevices, kAudioHardwarePropertyDefaultOutputDevice] {
             var addr = address(selector)
@@ -81,10 +89,10 @@ enum CoreAudioDevices {
     }
 }
 
-// MARK: - USB'deki iPhone
+// MARK: - iPhone on USB
 
 enum USBDevices {
-    /// USB'ye takılı bir iPhone veya iPad var mı?
+    /// Is an iPhone or iPad plugged in over USB?
     static func appleMobileConnected() -> Bool {
         var iterator: io_iterator_t = 0
         guard IOServiceGetMatchingServices(kIOMainPortDefault, IOServiceMatching("IOUSBHostDevice"), &iterator) == KERN_SUCCESS else {
@@ -103,9 +111,9 @@ enum USBDevices {
     }
 }
 
-// MARK: - Audio MIDI Ayarları
+// MARK: - Audio MIDI Setup
 
-/// iPhone'un ses aygıtı, Audio MIDI Ayarları'nda iPhone'un yanındaki "Etkinleştir"e basılınca ortaya çıkar.
+/// The iPhone's audio device appears after clicking "Enable" under the iPhone in Audio MIDI Setup.
 enum AudioMIDISetup {
     static let bundleID = "com.apple.audio.AudioMIDISetup"
 
@@ -114,12 +122,12 @@ enum AudioMIDISetup {
         NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
     }
 
-    /// Kapatmak aygıtı yeniden gizleyebilir; uygulamayı yalnızca gizle.
+    /// Quitting it may remove the device again, so only hide it.
     static func hide() {
         NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).first?.hide()
     }
 
-    /// Ana penceresinin çerçevesi (Cocoa koordinatlarında). CGWindowList izin gerektirmez.
+    /// Frame of its main window in Cocoa coordinates. CGWindowList needs no permission.
     static func windowFrame() -> NSRect? {
         guard let pid = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).first?.processIdentifier,
               let info = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)
@@ -133,12 +141,12 @@ enum AudioMIDISetup {
             return rect
         }
         guard let rect = rects.max(by: { $0.width * $0.height < $1.width * $1.height }) else { return nil }
-        // CG: sol üst köken; Cocoa: sol alt köken.
+        // CG: top-left origin; Cocoa: bottom-left origin.
         return NSRect(x: rect.minX, y: primary.frame.maxY - rect.maxY, width: rect.width, height: rect.height)
     }
 }
 
-// MARK: - Giriş ve çıkış motorları arasındaki tampon
+// MARK: - Buffer between the input and output engines
 
 final class RingBuffer {
     private let channels: [UnsafeMutablePointer<Float>]
@@ -152,7 +160,7 @@ final class RingBuffer {
 
     init(channelCount: Int, sampleRate: Double) {
         self.sampleRate = sampleRate
-        capacity = Int(sampleRate) // 1 saniye
+        capacity = Int(sampleRate) // 1 second
         channels = (0..<channelCount).map { _ in
             let p = UnsafeMutablePointer<Float>.allocate(capacity: Int(sampleRate))
             p.initialize(repeating: 0, count: Int(sampleRate))
@@ -176,7 +184,7 @@ final class RingBuffer {
                 w = (w + 1) % capacity
             }
             available += n
-            // Gecikme birikirse eski örnekleri at.
+            // Drop old samples if latency builds up.
             let maxFill = max(Int(sampleRate * 0.15), chunk * 3)
             if available > maxFill {
                 let keep = max(Int(sampleRate * 0.05), chunk + chunk / 2)
@@ -199,12 +207,12 @@ final class RingBuffer {
             }
             readIndex = (readIndex + n) % capacity
             available -= n
-            if n < frames { primed = false } // boşaldı, yeniden doldur
+            if n < frames { primed = false } // ran dry, refill first
         }
     }
 }
 
-// MARK: - Ses yönlendirici
+// MARK: - Audio router
 
 struct RouterError: LocalizedError {
     let errorDescription: String?
@@ -228,7 +236,7 @@ final class AudioRouter {
         do {
             let inNode = inE.inputNode
             try setDevice(inNode.audioUnit, input, "Couldn't select the input device")
-            // outputFormat aygıt değişince eski aygıtın formatında kalabiliyor; donanım formatını kullan.
+            // outputFormat can keep the previous device's format after switching; use the hardware format.
             let format = inNode.inputFormat(forBus: 0)
             guard format.sampleRate > 0, format.channelCount > 0 else {
                 throw RouterError(errorDescription: "Couldn't read the iPhone audio format")
@@ -291,7 +299,7 @@ final class AudioRouter {
     }
 }
 
-// MARK: - Menü çubuğu
+// MARK: - Menu bar
 
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
@@ -300,7 +308,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var lastError: String?
     private var micDenied = false
     private let hint = EnableHint()
-    /// Bu takılışta Audio MIDI Ayarları zaten açıldı mı? iPhone çıkarılınca sıfırlanır.
+    /// Whether Audio MIDI Setup was already opened for this connection. Reset when the iPhone is unplugged.
     private var promptedForEnable = false
 
     private var enabled: Bool {
@@ -318,7 +326,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         CoreAudioDevices.onChange { [weak self] in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self?.sync() }
         }
-        // iPhone takılınca ses aygıtı hemen görünmeyebilir; USB'yi ara sıra kontrol et.
+        // Plugging in the iPhone doesn't always add an audio device, so check USB periodically.
         Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
             guard let self, !router.isRunning else { return }
             sync()
@@ -330,10 +338,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         router.stop()
     }
 
-    // MARK: Durum
+    // MARK: State
 
     private func resolveInput(_ devices: [AudioDevice]) -> AudioDevice? {
-        // Continuity mikrofonu da iPhone adını taşıyabilir; yalnızca USB ses aygıtını al.
+        // The Continuity microphone can carry the iPhone's name too; only take the USB audio device.
         let usb = devices.filter { $0.isUSB && $0.inputs > 0 }
         return usb.first { $0.name.localizedCaseInsensitiveContains("iPhone") }
             ?? usb.first { $0.name.localizedCaseInsensitiveContains("iPad") }
@@ -386,7 +394,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
-    /// iPhone takılı ama sesi kapalıysa Audio MIDI Ayarları'nı açar ve ne yapılacağını gösterir (her takılışta bir kez).
+    /// If the iPhone is plugged in but its audio is off, opens Audio MIDI Setup and shows what to do (once per connection).
     private func promptEnableIfNeeded() {
         guard USBDevices.appleMobileConnected() else {
             promptedForEnable = false
@@ -416,7 +424,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusItem.button?.toolTip = tip
     }
 
-    // MARK: Menü
+    // MARK: Menu
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
@@ -441,7 +449,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         addInfo(status, to: menu)
         if router.isRunning {
-            // macOS her ses girişi için mikrofon simgesini gösterir; kullanıcıya ne okunduğunu açıkça söyle.
+            // macOS shows the mic icon for any audio input; tell the user what is actually read.
             addInfo("No microphone is used. The orange mic icon", to: menu)
             addInfo("appears because macOS treats iPhone audio as input.", to: menu)
         }

@@ -8,6 +8,8 @@
 	<string>iPhone Audio</string>
 	<key>CFBundleIdentifier</key>
 	<string>local.iphoneses</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright (c) 2026 productdevbook. MIT License.</string>
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>CFBundleExecutable</key>

@@ -1,7 +1,12 @@
 #!/bin/zsh
-# iPhone Audio menü çubuğu uygulamasını derler ve ~/Applications'a kurar.
-# Sabit bir imza (Apple Development) kullanılır; geçici imzada macOS her derlemeden sonra
-# mikrofon ve Erişilebilirlik izinlerini geçersiz sayar.
+#
+# iPhone Audio
+# Created by productdevbook (https://productdevbook.com).
+# Copyright (c) 2026 productdevbook. Licensed under the MIT License.
+#
+# Builds the iPhone Audio menu bar app and installs it to ~/Applications.
+# Signs with a stable identity (Apple Development); with ad-hoc signing macOS drops the
+# microphone and Accessibility permissions after every build.
 set -e
 cd "$(dirname "$0")"
 APP="build/iPhone Audio.app"
@@ -28,4 +33,4 @@ pkill -x iPhoneSes && sleep 1 || true
 rm -rf ~/Applications/"iPhone Audio.app"
 cp -R "$APP" ~/Applications/
 open ~/Applications/"iPhone Audio.app"
-echo "Kuruldu: ~/Applications/iPhone Audio.app (imza: ${SIGN_ID:-adhoc})"
+echo "Installed: ~/Applications/iPhone Audio.app (signed with: ${SIGN_ID:-adhoc})"

@@ -31,3 +31,11 @@ Keep **Mic Mode** on **Standard**. **Voice Isolation** makes music sound bad.
 ```
 
 The app is installed to `~/Applications/iPhone Audio.app`.
+
+## Author
+
+Made by [productdevbook](https://productdevbook.com).
+
+## License
+
+[MIT](LICENSE)
