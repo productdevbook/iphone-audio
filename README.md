@@ -3,7 +3,10 @@
   <img src="assets/cover-light.jpg" alt="Hear your iPhone on your Mac." width="100%">
 </picture>
 
-# <img src="assets/logo.jpg" alt="" width="40" align="top"> iPhone Audio
+<img src="assets/logo-light.jpg#gh-light-mode-only" alt="" width="64">
+<img src="assets/logo-dark.jpg#gh-dark-mode-only" alt="" width="64">
+
+# iPhone Audio
 
 Plays your iPhone's sound on your Mac's headphones. The iPhone is connected with a USB cable.
 
