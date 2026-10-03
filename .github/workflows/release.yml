@@ -12,6 +12,8 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Import Developer ID certificate
         env:
@@ -55,4 +57,6 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" "build/iPhone-Audio-${GITHUB_REF_NAME}.zip" --generate-notes
+        run: |
+          .github/scripts/release-notes.sh "$GITHUB_REF_NAME" "$GITHUB_REPOSITORY" > build/notes.md
+          gh release create "$GITHUB_REF_NAME" "build/iPhone-Audio-${GITHUB_REF_NAME}.zip" --title "iPhone Audio ${GITHUB_REF_NAME}" --notes-file build/notes.md
