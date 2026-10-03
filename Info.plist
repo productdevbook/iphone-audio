@@ -8,6 +8,8 @@
 	<string>iPhone Audio</string>
 	<key>CFBundleIdentifier</key>
 	<string>local.iphoneses</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>CFBundleExecutable</key>
 	<string>iPhoneSes</string>
 	<key>CFBundlePackageType</key>

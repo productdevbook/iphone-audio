@@ -440,6 +440,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             status = "iPhone not connected"
         }
         addInfo(status, to: menu)
+        if router.isRunning {
+            // macOS her ses girişi için mikrofon simgesini gösterir; kullanıcıya ne okunduğunu açıkça söyle.
+            addInfo("No microphone is used. The orange mic icon", to: menu)
+            addInfo("appears because macOS treats iPhone audio as input.", to: menu)
+        }
         menu.addItem(.separator())
 
         let toggle = item("Play iPhone Audio", #selector(toggleEnabled))
