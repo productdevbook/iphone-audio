@@ -1,0 +1,89 @@
+---
+import '../styles/global.css'
+import { locales, localePath, type Locale } from '../i18n'
+
+interface Props {
+  locale: Locale
+  title: string
+  description: string
+  path?: string
+  noindex?: boolean
+}
+
+const { locale, title, description, path = '', noindex = false } = Astro.props
+const site = Astro.site!
+const canonical = new URL(localePath(locale) + path, site).href
+const ogImage = new URL('/og.jpg', site).href
+const ogLocale = { en: 'en_US', tr: 'tr_TR', de: 'de_DE' }
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'iPhone Audio',
+  description,
+  url: new URL(localePath(locale), site).href,
+  image: ogImage,
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'macOS 13 or later',
+  inLanguage: locale,
+  license: 'https://opensource.org/licenses/MIT',
+  isAccessibleForFree: true,
+  author: { '@type': 'Organization', name: 'productdevbook', url: 'https://productdevbook.com' },
+  codeRepository: 'https://github.com/productdevbook/iphone-audio',
+  offers: [
+    { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    { '@type': 'Offer', price: '4.99', priceCurrency: 'USD', name: 'Supporter' },
+  ],
+}
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {locales.map((l) => <link rel="alternate" hreflang={l} href={new URL(localePath(l) + path, site).href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL('/' + path, site).href} />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="iPhone Audio" />
+    <meta property="og:locale" content={ogLocale[locale]} />
+    {locales.filter((l) => l !== locale).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="640" />
+    <meta property="og:image:alt" content="iPhone Audio" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="apple-mobile-web-app-title" content="iPhone Audio" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    {noindex && <meta name="robots" content="noindex" />}
+  </head>
+  <body class="min-h-dvh">
+    <slot />
+    <script>
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('in')
+              io.unobserve(e.target)
+            }
+          }
+        },
+        { rootMargin: '0px 0px -10% 0px' },
+      )
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el))
+    </script>
+  </body>
+</html>

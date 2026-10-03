@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /thanks
+Disallow: /tr/thanks
+Disallow: /de/thanks
+
+Sitemap: https://iphone-audio.productdevbook.com/sitemap-index.xml

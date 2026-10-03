@@ -1,0 +1,27 @@
+---
+import { Image } from 'astro:assets'
+import { dicts, localePath, type Locale } from '../i18n'
+import icon from '../../../assets/icon-1024.png'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const t = dicts[locale]
+const home = localePath(locale)
+---
+
+<header class="glass fixed inset-x-0 top-0 z-50 border-b border-(--hairline)">
+  <nav class="mx-auto flex h-12 max-w-6xl items-center justify-between px-6 text-[13px]">
+    <a href={home} class="flex items-center gap-2 font-semibold tracking-tight">
+      <Image src={icon} alt="" width={40} height={40} densities={[1, 2]} class="size-5 rounded-[22%]" />iPhone Audio
+    </a>
+    <div class="flex items-center gap-6">
+      <a href={`${home}#how`} class="hidden text-(--fg-mute) transition hover:text-(--fg) sm:inline">{t.nav.how}</a>
+      <a href={`${home}#pricing`} class="hidden text-(--fg-mute) transition hover:text-(--fg) sm:inline">{t.nav.pricing}</a>
+      <a href={`${home}#faq`} class="hidden text-(--fg-mute) transition hover:text-(--fg) sm:inline">{t.nav.faq}</a>
+      <a href={`${home}#download`} class="rounded-full bg-accent px-3.5 py-1 font-medium text-white transition hover:bg-accent-hover">{t.nav.download}</a>
+    </div>
+  </nav>
+</header>

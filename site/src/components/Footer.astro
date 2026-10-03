@@ -1,0 +1,30 @@
+---
+import { dicts, locales, localeNames, localePath, type Locale } from '../i18n'
+import { repoUrl } from '../lib/release'
+
+interface Props {
+  locale: Locale
+  path?: string
+}
+
+const { locale, path = '' } = Astro.props
+const t = dicts[locale]
+---
+
+<footer class="border-t border-(--hairline) bg-(--bg-alt) px-6 py-12 text-[13px] text-(--fg-mute)">
+  <div class="mx-auto flex max-w-6xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <p>
+      {t.footer.made} <a href="https://productdevbook.com" class="text-(--fg) hover:underline">productdevbook</a> ·
+      <a href={`${repoUrl}/blob/main/LICENSE`} class="hover:underline">{t.footer.license}</a> ·
+      <a href={repoUrl} class="hover:underline">GitHub</a> ·
+      <a href={`${repoUrl}/releases`} class="hover:underline">{t.footer.releases}</a>
+    </p>
+    <nav aria-label={t.footer.language} class="flex gap-4">
+      {locales.map((l) => (
+        <a href={localePath(l) + path} hreflang={l} lang={l} aria-current={l === locale ? 'page' : undefined} class:list={['hover:text-(--fg)', l === locale && 'font-semibold text-(--fg)']}>
+          {localeNames[l]}
+        </a>
+      ))}
+    </nav>
+  </div>
+</footer>

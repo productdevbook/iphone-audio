@@ -60,3 +60,8 @@ jobs:
         run: |
           .github/scripts/release-notes.sh "$GITHUB_REF_NAME" "$GITHUB_REPOSITORY" > build/notes.md
           gh release create "$GITHUB_REF_NAME" "build/iPhone-Audio-${GITHUB_REF_NAME}.zip" --title "iPhone Audio ${GITHUB_REF_NAME}" --notes-file build/notes.md
+
+      - name: Rebuild website
+        env:
+          HOOK: ${{ secrets.PAGES_DEPLOY_HOOK }}
+        run: curl -fsS -X POST "$HOOK" > /dev/null
