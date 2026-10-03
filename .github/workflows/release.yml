@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Import Developer ID certificate
+        env:
+          P12: ${{ secrets.MACOS_CERT_P12 }}
+          P12_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+        run: |
+          KC=$RUNNER_TEMP/signing.keychain-db
+          KC_PASS=$(openssl rand -base64 24)
+          security create-keychain -p "$KC_PASS" "$KC"
+          security set-keychain-settings -lut 21600 "$KC"
+          security unlock-keychain -p "$KC_PASS" "$KC"
+          echo "$P12" | base64 --decode > $RUNNER_TEMP/cert.p12
+          security import $RUNNER_TEMP/cert.p12 -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KC"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KC_PASS" "$KC" >/dev/null
+          security list-keychains -d user -s "$KC" $(security list-keychains -d user | tr -d '"')
+
+      - name: Build and sign
+        env:
+          SIGN_ID: "Developer ID Application: Mehmet Kalayci (QPH96J479A)"
+          RELEASE: "1"
+        run: |
+          V=${GITHUB_REF_NAME#v}
+          plutil -replace CFBundleShortVersionString -string "$V" Info.plist
+          plutil -replace CFBundleVersion -string "$GITHUB_RUN_NUMBER" Info.plist
+          ./build.sh
+          codesign --verify --strict --verbose=2 "build/iPhone Audio.app"
+
+      - name: Notarize
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          echo "$ASC_KEY_P8" | base64 --decode > $RUNNER_TEMP/key.p8
+          ditto -c -k --keepParent "build/iPhone Audio.app" build/notarize.zip
+          xcrun notarytool submit build/notarize.zip --key $RUNNER_TEMP/key.p8 --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" --wait
+          xcrun stapler staple "build/iPhone Audio.app"
+          spctl --assess --type execute --verbose "build/iPhone Audio.app"
+          ditto -c -k --keepParent "build/iPhone Audio.app" "build/iPhone-Audio-${GITHUB_REF_NAME}.zip"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" "build/iPhone-Audio-${GITHUB_REF_NAME}.zip" --generate-notes

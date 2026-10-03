@@ -25,9 +25,10 @@ done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 SIGN_ID=""
 for id in $SIGN_IDS; do
-  codesign --force --sign "$id" "$APP" 2>/dev/null && { SIGN_ID=$id; break; }
+  codesign --force --options runtime --timestamp --entitlements entitlements.plist --sign "$id" "$APP" 2>/dev/null && { SIGN_ID=$id; break; }
 done
-[[ -n $SIGN_ID ]] || codesign --force --sign - "$APP"
+[[ -n $SIGN_ID ]] || { [[ -z $RELEASE ]] && codesign --force --sign - "$APP"; } || { echo "Signing failed"; exit 1; }
+[[ -n $RELEASE ]] && exit 0
 mkdir -p ~/Applications
 pkill -x iPhoneSes && sleep 1 || true
 rm -rf ~/Applications/"iPhone Audio.app"
