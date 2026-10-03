@@ -48,8 +48,7 @@ const jsonLd = {
     <link rel="alternate" hreflang="x-default" href={new URL('/' + path, site).href} />
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -83,7 +82,7 @@ const jsonLd = {
         },
         { rootMargin: '0px 0px -10% 0px' },
       )
-      document.querySelectorAll('.reveal').forEach((el) => io.observe(el))
+      document.querySelectorAll('.reveal, .rise').forEach((el) => io.observe(el))
     </script>
   </body>
 </html>

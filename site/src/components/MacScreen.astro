@@ -1,0 +1,37 @@
+---
+import type { Dict } from '../i18n'
+
+interface Props {
+  menu: Dict['menu']
+}
+
+const { menu } = Astro.props
+---
+
+<div class="wallpaper relative aspect-[16/9] w-full overflow-hidden rounded-[18px] sm:rounded-[28px]" aria-hidden="true">
+  <div class="vibrant absolute inset-x-0 top-0 flex h-[3.2%] min-h-6 items-center justify-between px-[1.6%] text-[clamp(9px,1.1vw,14px)] font-medium text-black/85">
+    <span></span>
+    <div class="flex items-center gap-[1.3em]">
+      <span class="rounded-[0.35em] bg-black/12 px-[0.4em] py-[0.15em]">
+        <svg viewBox="0 0 24 24" class="h-[1.25em]" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="8" y="3" width="8" height="18" rx="2.2" /><path d="M4.5 9.5a6 6 0 0 0 0 5M19.5 9.5a6 6 0 0 1 0 5" /></svg>
+      </span>
+      <span class="size-[0.6em] rounded-full bg-[#ff9f0a]"></span>
+      <span class="hidden sm:inline">Fri 9:41 AM</span>
+    </div>
+  </div>
+
+  <div class="vibrant absolute top-[4.4%] right-[13%] w-[44%] min-w-[220px] rounded-[0.8em] text-left p-[0.45em] text-[clamp(8px,1.15vw,15px)] text-black/90 shadow-[0_1.5em_4em_rgba(0,0,0,0.35)] ring-1 ring-black/10">
+    <div class="flex items-center gap-[0.7em] px-[0.6em] py-[0.35em]">
+      <span class="wave flex h-[1em] items-end gap-[0.18em]">
+        <span class="h-full w-[0.2em] rounded-full bg-black/70"></span><span class="h-full w-[0.2em] rounded-full bg-black/70"></span><span class="h-full w-[0.2em] rounded-full bg-black/70"></span><span class="h-full w-[0.2em] rounded-full bg-black/70"></span>
+      </span>
+      <span class="text-black/55">{menu.status}</span>
+    </div>
+    <p class="px-[0.6em] pb-[0.2em] text-[0.82em] leading-snug text-black/45">{menu.note1}<br />{menu.note2}</p>
+    <div class="mx-[0.6em] my-[0.35em] h-px bg-black/10"></div>
+    <div class="flex items-center gap-[0.5em] rounded-[0.35em] bg-[#0a68dd] px-[0.6em] py-[0.3em] text-white"><span class="w-[0.9em]">✓</span>{menu.play}</div>
+    <div class="mx-[0.6em] my-[0.35em] h-px bg-black/10"></div>
+    <div class="flex items-center gap-[0.5em] px-[0.6em] py-[0.3em]"><span class="w-[0.9em]">✓</span>{menu.login}</div>
+    <div class="flex items-center justify-between px-[0.6em] py-[0.3em]"><span class="pl-[1.4em]">{menu.quit}</span><span class="text-black/40">⌘Q</span></div>
+  </div>
+</div>

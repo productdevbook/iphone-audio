@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets'
 import Base from '../layouts/Base.astro'
-import Icon from './Icon.astro'
 import Nav from './Nav.astro'
 import Footer from './Footer.astro'
 import { dicts, localePath, type Locale } from '../i18n'
@@ -19,17 +18,16 @@ const release = await latestRelease()
 
 <Base locale={locale} title={`${t.thanks.title} — iPhone Audio`} description={t.thanks.text} path="thanks/" noindex>
   <Nav locale={locale} />
-  <main class="relative flex min-h-[80dvh] items-center justify-center overflow-hidden px-6 pt-32 pb-24 text-center">
-    <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[560px] bg-[radial-gradient(60%_50%_at_50%_0%,rgba(255,92,138,0.14),transparent_70%)]"></div>
+  <main class="flex min-h-[78dvh] items-center justify-center px-6 py-28 text-center">
     <div class="reveal max-w-2xl">
-      <Image src={icon} alt="" width={112} height={112} densities={[1, 2]} loading="eager" class="mx-auto mb-8 size-24 rounded-[22%] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.35)]" />
-      <h1 class="headline text-4xl sm:text-6xl">{t.thanks.title}</h1>
-      <p class="mt-6 text-lg leading-relaxed text-(--fg-mute) sm:text-xl">{t.thanks.text}</p>
-      <a href={release.download} class="mt-10 inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-[17px] font-medium text-white transition hover:bg-accent-hover">
-        <Icon name="download" class="size-5" />{t.thanks.cta}{release.version && ` ${release.version}`}
+      <Image src={icon} alt="" width={128} height={128} densities={[1, 2]} loading="eager" class="mx-auto size-28 rounded-[22.5%] shadow-[0_24px_48px_-16px_rgba(0,0,0,0.35)]" />
+      <h1 class="display mt-10 text-[48px] sm:text-[80px]">{t.thanks.title}</h1>
+      <p class="mt-4 text-[19px] text-gray sm:text-[21px]">{t.thanks.text}</p>
+      <a href={release.download} class="mt-10 inline-block rounded-full bg-blue px-[22px] py-[11px] text-[17px] text-white transition hover:bg-[#0077ed]">
+        {t.thanks.cta}{release.version && ` ${release.version}`}
       </a>
-      <p class="mt-6 text-sm text-(--fg-mute)">{t.thanks.later}</p>
-      <a href={localePath(locale)} class="mt-10 inline-block text-accent hover:underline">{t.thanks.back}</a>
+      <p class="mt-6 text-[14px] text-gray">{t.thanks.later}</p>
+      <a href={localePath(locale)} class="mt-8 inline-block text-[17px] text-link hover:underline">{t.thanks.back} ›</a>
     </div>
   </main>
   <Footer locale={locale} path="thanks/" />
