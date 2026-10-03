@@ -1,6 +1,7 @@
-<p align="center">
-  <img src="assets/cover.jpg" alt="iPhone Audio" width="100%">
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/cover-dark.jpg">
+  <img src="assets/cover-light.jpg" alt="Hear your iPhone on your Mac." width="100%">
+</picture>
 
 # <img src="assets/logo.jpg" alt="" width="40" align="top"> iPhone Audio
 
