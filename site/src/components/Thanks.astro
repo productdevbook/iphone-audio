@@ -19,7 +19,7 @@ const release = await latestRelease()
 <Base locale={locale} title={`${t.thanks.title} — iPhone Audio`} description={t.thanks.text} path="thanks/" noindex>
   <Nav locale={locale} />
   <main class="flex min-h-[78dvh] items-center justify-center px-6 py-28 text-center">
-    <div class="reveal max-w-2xl">
+    <div class="max-w-2xl">
       <Image src={icon} alt="" width={128} height={128} densities={[1, 2]} loading="eager" class="mx-auto size-28 rounded-[22.5%] shadow-[0_24px_48px_-16px_rgba(0,0,0,0.35)]" />
       <h1 class="display mt-10 text-[48px] sm:text-[80px]">{t.thanks.title}</h1>
       <p class="mt-4 text-[19px] text-gray sm:text-[21px]">{t.thanks.text}</p>
