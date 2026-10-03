@@ -13,7 +13,7 @@ export function localePath(locale: Locale, hash = '') {
 
 const en = {
   meta: {
-    title: 'iPhone Audio — Hear your iPhone on your Mac',
+    title: 'iPhone Audio: Hear your iPhone on your Mac',
     description:
       'A free menu bar app that plays your iPhone’s sound through your Mac’s headphones over a USB cable. Signed and notarized by Apple.',
   },
@@ -35,7 +35,7 @@ const en = {
     quit: 'Quit',
   },
   intro:
-    'Your iPhone is in your hand. Your headphones are on your Mac. <strong>Plug in one cable</strong> and everything the iPhone plays — <strong>music, videos, games</strong> — comes out of the Mac. No Bluetooth pairing. <strong>Nothing to install on the phone.</strong>',
+    'Your iPhone is in your hand. Your headphones are on your Mac. <strong>Plug in one cable</strong> and everything the iPhone plays comes out of the Mac. <strong>Music, videos, games.</strong> No Bluetooth pairing. <strong>Nothing to install on the phone.</strong>',
   specs: {
     title: 'Small app.<br />Big difference.',
     items: [
@@ -100,7 +100,7 @@ export type Dict = typeof en
 
 const tr: Dict = {
   meta: {
-    title: 'iPhone Audio — iPhone’unuzu Mac’inizde dinleyin',
+    title: 'iPhone Audio: iPhone’unuzu Mac’inizde dinleyin',
     description:
       'iPhone’unuzun sesini USB kablosuyla Mac’inizin kulaklığında çalan ücretsiz menü çubuğu uygulaması. Apple tarafından imzalı ve onaylı.',
   },
@@ -122,7 +122,7 @@ const tr: Dict = {
     quit: 'Quit',
   },
   intro:
-    'iPhone elinizde. Kulaklık Mac’inizde. <strong>Tek bir kablo takın</strong>; iPhone’da çalan her şey — <strong>müzik, video, oyun</strong> — Mac’ten gelsin. Bluetooth eşleştirmesi yok. <strong>Telefona hiçbir şey kurulmaz.</strong>',
+    'iPhone elinizde. Kulaklık Mac’inizde. <strong>Tek bir kablo takın</strong>; iPhone’da çalan her şey Mac’ten gelsin. <strong>Müzik, video, oyun.</strong> Bluetooth eşleştirmesi yok. <strong>Telefona hiçbir şey kurulmaz.</strong>',
   specs: {
     title: 'Küçük uygulama.<br />Büyük fark.',
     items: [
@@ -185,7 +185,7 @@ const tr: Dict = {
 
 const de: Dict = {
   meta: {
-    title: 'iPhone Audio — Dein iPhone auf deinem Mac hören',
+    title: 'iPhone Audio: Dein iPhone auf deinem Mac hören',
     description:
       'Eine kostenlose Menüleisten-App, die den Ton deines iPhone über ein USB-Kabel auf den Kopfhörern deines Mac abspielt. Von Apple signiert und notarisiert.',
   },
@@ -207,7 +207,7 @@ const de: Dict = {
     quit: 'Quit',
   },
   intro:
-    'Dein iPhone ist in deiner Hand. Deine Kopfhörer hängen am Mac. <strong>Ein Kabel anstecken</strong>, und alles, was das iPhone spielt — <strong>Musik, Videos, Spiele</strong> — kommt aus dem Mac. Kein Bluetooth-Koppeln. <strong>Nichts auf dem iPhone zu installieren.</strong>',
+    'Dein iPhone ist in deiner Hand. Deine Kopfhörer hängen am Mac. <strong>Ein Kabel anstecken</strong>, und alles, was das iPhone spielt, kommt aus dem Mac. <strong>Musik, Videos, Spiele.</strong> Kein Bluetooth-Koppeln. <strong>Nichts auf dem iPhone zu installieren.</strong>',
   specs: {
     title: 'Kleine App.<br />Großer Unterschied.',
     items: [
